@@ -1,0 +1,15 @@
+opencv-python
+numpy
+pillow
+flask
+pytesseract
+imwatermark
+pymupdf
+tensorflow==2.15.0
+#keras
+python-docx
+sentence-transformers
+nltk
+matplotlib
+piexif
+gunicorn

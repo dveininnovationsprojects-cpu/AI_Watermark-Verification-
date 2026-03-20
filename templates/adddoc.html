@@ -1,0 +1,219 @@
+REDIRECT
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Embed Watermark</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+
+body{
+font-family:'Inter',sans-serif;
+background:#f3f4f6;
+}
+
+/* watermark cards */
+
+.card{
+transition:.3s;
+}
+
+.card:hover{
+transform:translateY(-6px);
+box-shadow:0 15px 30px rgba(0,0,0,.15);
+}
+
+
+/* slider */
+
+.slider{
+overflow:hidden;
+max-width:1000px;
+margin:auto;
+}
+
+.slider-track{
+display:flex;
+gap:30px;
+animation:scroll 18s linear infinite;
+}
+
+.slider img{
+width:250px;
+height:160px;
+object-fit:cover;
+border-radius:12px;
+box-shadow:0 10px 25px rgba(0,0,0,.25);
+transition:.3s;
+cursor:pointer;
+}
+
+/* zoom effect */
+
+.slider img:hover{
+transform:scale(1.2);
+z-index:10;
+}
+
+/* pause animation when hover */
+
+.slider:hover .slider-track{
+animation-play-state:paused;
+}
+
+
+@keyframes scroll{
+
+0%{
+transform:translateX(0);
+}
+
+100%{
+transform:translateX(-50%);
+}
+
+}
+
+</style>
+
+</head>
+
+
+<body class="min-h-screen">
+
+<!-- HEADER -->
+
+<header class="bg-blue-700 text-white shadow">
+
+<div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+
+<div class="flex items-center gap-3">
+
+<div class="w-8 h-8 bg-white rounded flex items-center justify-center font-bold text-blue-700">
+W
+</div>
+
+<h1 class="font-semibold text-lg">
+Embed Watermark
+</h1>
+
+</div>
+
+<a href="/indx/{{username}}" class="text-sm hover:underline">
+Back to Dashboard
+</a>
+
+</div>
+
+</header>
+
+
+<!-- MAIN -->
+
+<main class="py-12 px-6">
+
+<div class="max-w-6xl mx-auto">
+
+
+<!-- TITLE -->
+
+<div class="text-center mb-12">
+
+<h2 class="text-3xl font-bold text-gray-800 mb-2">
+Choose Watermark Type
+</h2>
+
+<p class="text-gray-500">
+Select the watermark type you want to embed into your image
+</p>
+
+</div>
+
+
+<!-- WATERMARK OPTIONS -->
+
+<div class="grid md:grid-cols-2 gap-10 mb-20">
+
+
+<div class="card bg-white rounded-xl border overflow-hidden">
+
+<div class="bg-blue-500 text-white text-center py-6 font-semibold text-lg">
+Search Ownership
+</div>
+
+<div class="p-6 text-gray-600 text-sm">
+check for ownership details of a pdf or docx file 
+</div>
+
+<div class="px-6 pb-6">
+<a href="/docorpdf/{{username}}" class="text-blue-600 font-medium">
+Open →
+</a>
+</div>
+
+</div>
+
+
+<div class="card bg-white rounded-xl border overflow-hidden">
+
+<div class="bg-green-500 text-white text-center py-6 font-semibold text-lg">
+Visible Watermark
+</div>
+
+<div class="p-6 text-gray-600 text-sm">
+Embed visible watermark data to a pdf or docx file.
+</div>
+
+<div class="px-6 pb-6">
+<a href="/adddoc/{{username}}" class="text-green-600 font-medium">
+Open →
+</a>
+</div>
+
+</div>
+
+
+</div>
+
+
+<!-- WATERMARK SHOWCASE -->
+
+<h2 class="text-2xl font-bold text-center text-gray-800 mb-10">
+Watermark Showcase
+</h2>
+
+
+<div class="slider">
+
+<div class="slider-track">
+
+<img src="/templates/WATERMARKIMG4.jpg">
+<img src="/templates/watermarfk img1.webp">
+<img src="/templates/watermaerkimg2.jpg"> 
+<img src="/templates/wATERMQRKIMG3.jpg">
+
+<!-- duplicate images for smooth infinite scroll -->
+
+<img src="/templates/WATERMARKIMG4.jpg">
+<img src="/templates/watermarfk img1.webp">
+<img src="/templates/watermaerkimg2.jpg"> 
+<img src="/templates/wATERMQRKIMG3.jpg">
+
+</div>
+
+</div>
+
+
+</div>
+
+</main>
+
+</body>
+
+</html>

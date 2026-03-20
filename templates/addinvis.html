@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Watermarkly - Add Invisible Text Watermark</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {"primary": "#135bec","background-light": "#f6f6f8","background-dark": "#101622"},
+                    fontFamily: {"display": ["Inter"]},
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+</script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#0d121b]">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+
+<!-- Updated Blue Header -->
+<header class="flex items-center justify-between px-6 py-4 bg-[#1f3c88] text-white">
+<div class="flex items-center gap-3">
+<h1 class="text-xl font-black tracking-tight text-white">Watermark Intelligence System</h1>
+</div>
+
+<a href="/indx/{{username}}" class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-white/10 text-white transition">
+<span class="material-symbols-outlined text-2xl text-white">home</span>
+</a>
+</header>
+
+<main class="flex flex-1 flex-col items-center py-12 px-6">
+<div class="layout-content-container flex flex-col w-full max-w-[720px] gap-8">
+
+<header class="flex flex-col items-center gap-2 mb-4">
+<div class="flex items-center gap-3 text-primary mb-2">
+</div>
+<div class="text-center">
+<h2 class="text-3xl font-black leading-tight tracking-[-0.033em] text-[#0d121b]">Add Invisible Watermark</h2>
+<p class="text-[#4c669a] text-lg font-normal mt-2">Upload a JPG or PNG file and enter watermark text</p>
+</div>
+</header>
+
+<form action="/addinvis/{{username}}" method="POST" enctype="multipart/form-data" class="bg-white rounded-xl shadow-sm border border-[#e7ebf3] p-8 flex flex-col gap-8">
+
+<div class="group relative flex flex-col items-center justify-center gap-6 rounded-xl border-2 border-dashed border-[#cfd7e7] bg-background-light/50 px-6 py-20 transition-all hover:border-primary/50 hover:bg-primary/5 cursor-pointer">
+<div class="flex flex-col items-center gap-4">
+<div class="bg-primary/10 p-4 rounded-full text-primary">
+<span class="material-symbols-outlined text-4xl">cloud_upload</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<p class="text-[#0d121b] text-xl font-bold text-center">Upload Image</p>
+<p class="text-[#4c669a] text-sm text-center">Drag and drop your image here, or click to browse</p>
+</div>
+<img id="preview" class="hidden max-h-64 rounded-lg border border-[#cfd7e7]" />
+</div>
+<input id="imageInput" name="image" class="absolute inset-0 opacity-0 cursor-pointer" type="file" required/>
+</div>
+
+<div class="flex flex-col gap-2">
+<label class="text-[#0d121b] text-base font-bold">Watermark Text</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#4c669a]">key</span>
+<input name="key" class="form-input flex w-full rounded-lg border border-[#cfd7e7] bg-white h-14 pl-12 pr-4 text-base" placeholder="Enter watermark text" type="text" required/>
+</div>
+</div>
+
+<button class="flex w-full items-center justify-center rounded-lg h-14 px-6 bg-primary text-white text-lg font-bold shadow-lg shadow-primary/20 hover:bg-primary/90">
+<span class="material-symbols-outlined mr-2">settings_suggest</span>
+<span>Process Image</span>
+</button>
+</form>
+
+</footer>
+</div>
+<script>
+const input = document.getElementById('imageInput');
+const preview = document.getElementById('preview');
+
+input.addEventListener('change', function(){
+    const file = this.files[0];
+    if(file){
+        const reader = new FileReader();
+        reader.onload = function(e){
+            preview.src = e.target.result;
+            preview.classList.remove('hidden');
+        }
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+</body></html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-100">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Watermark & Ownership Verification</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+<script>
+tailwind.config = {darkMode:"class",theme:{extend:{colors:{primary:"#135bec","background-light":"#f6f6f8","background-dark":"#101622"},fontFamily:{display:["Inter","sans-serif"]}}}}
+</script>
+<style>
+.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;display:inline-block;vertical-align:middle;}
+
+body{
+font-family:'Inter',sans-serif;
+}
+
+.card{
+transition:all .25s ease;
+}
+
+.card:hover{
+transform:translateY(-4px);
+box-shadow:0 15px 30px rgba(0,0,0,.1);
+}
+
+</style>
+
+</head>
+
+
+<body class="h-full">
+
+<div class="min-h-full flex flex-col">
+
+
+<!-- HEADER -->
+<header class="bg-blue-700 text-white shadow">
+
+<div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+
+<div class="flex items-center gap-3">
+
+<div class="w-8 h-8 bg-white rounded flex items-center justify-center font-bold text-blue-700">
+W
+</div>
+
+<div>
+<h1 class="font-semibold text-lg">AI Watermark & Ownership Verification</h1>
+<p class="text-xs opacity-80">Secure Image Protection System</p>
+</div>
+
+</div>
+
+<div class="flex items-center gap-6 text-sm">
+
+<span class="opacity-80">Version 1.0</span>
+
+<a href="/login" class="hover:underline">Logout</a>
+
+</div>
+
+</div>
+
+</header>
+
+
+<!-- MAIN -->
+<main class="flex-1 py-10 px-6">
+
+<div class="max-w-7xl mx-auto">
+
+<!-- WELCOME -->
+<div class="text-center mb-12">
+
+<h2 class="text-3xl font-bold text-gray-800 mb-2">
+Welcome to AI Watermark System
+</h2>
+
+<p class="text-gray-500">
+Choose from our comprehensive suite of watermark and ownership verification tools
+</p>
+
+</div>
+
+
+
+<!-- CARDS -->
+<div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+
+<!-- EMBED -->
+<div class="card bg-white rounded-xl overflow-hidden border">
+
+<div class="bg-blue-500 text-white text-center py-6 font-semibold text-lg">
+Embed Watermark
+</div>
+
+<div class="p-6 text-sm text-gray-600">
+Securely embed watermarks into your images with customizable settings.
+</div>
+
+<div class="px-6 pb-6">
+<a href="/addwa/{{username}}" class="text-blue-600 font-medium">
+Get Started →
+</a>
+</div>
+
+</div>
+
+
+
+<!-- DETECT -->
+<div class="card bg-white rounded-xl overflow-hidden border">
+
+<div class="bg-green-500 text-white text-center py-6 font-semibold text-lg">
+Detect Watermark
+</div>
+
+<div class="p-6 text-sm text-gray-600">
+Analyze images to detect watermarks with accuracy mapping.
+</div>
+
+<div class="px-6 pb-6">
+<a href="/all/{{username}}" class="text-green-600 font-medium">
+Get Started →
+</a>
+</div>
+
+</div>
+
+
+
+<!-- TEMPLATE -->
+<div class="card bg-white rounded-xl overflow-hidden border">
+
+<div class="bg-indigo-500 text-white text-center py-6 font-semibold text-lg">
+Template Detection
+</div>
+
+<div class="p-6 text-sm text-gray-600">
+Compare images with watermark templates.
+</div>
+
+<div class="px-6 pb-6">
+<a href="/template/{{username}}" class="text-indigo-600 font-medium">
+Get Started →
+</a>
+</div>
+
+</div>
+
+
+
+<!-- VERIFY -->
+<div class="card bg-white rounded-xl overflow-hidden border">
+
+<div class="bg-red-500 text-white text-center py-6 font-semibold text-lg">
+Verify Ownership
+</div>
+
+<div class="p-6 text-sm text-gray-600">
+Confirm image ownership using security keys.
+</div>
+
+<div class="px-6 pb-6">
+<a href="/search/{{username}}" class="text-red-600 font-medium">
+Get Started →
+</a>
+</div>
+
+</div>
+<!-- VERIFY -->
+<div class="card bg-white rounded-xl overflow-hidden border">
+
+<div class="bg-red-500 text-white text-center py-6 font-semibold text-lg">
+Document options
+</div>
+
+<div class="p-6 text-sm text-gray-600">
+Watermark addition and ownership check for documents
+</div>
+
+<div class="px-6 pb-6">
+<a href="/docu/{{username}}" class="text-red-600 font-medium">
+Get Started →
+</a>
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- HISTORY SECTION -->
+<div class="mt-16">
+
+<div class="flex justify-between items-center mb-4">
+
+<h2 class="text-2xl font-semibold text-gray-800">
+Recent Watermark History
+</h2>
+
+<a href="/history/{{username}}"
+class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+View Full History
+</a>
+
+</div>
+
+
+
+<div class="bg-white shadow rounded-xl border overflow-hidden">
+
+<table class="w-full text-left">
+
+<thead class="bg-gray-100 text-gray-600 text-sm">
+
+<tr>
+
+<th class="px-6 py-3">Preview</th>
+<th class="px-6 py-3">Date & Time</th>
+<th class="px-6 py-3">Added Key</th>
+<th class="px-6 py-3">Query</th>
+
+</tr>
+
+</thead>
+
+
+<tbody id="historyPreviewTable">
+</tbody>
+<script>
+async function loadHistoryPreview(){
+
+const username = "{{username}}"
+
+const res = await fetch(`/api/hist2/${username}`)
+const data = await res.json()
+
+const table = document.getElementById("historyPreviewTable")
+
+table.innerHTML=""
+console.log(data)
+data.slice(0,5).forEach(item=>{
+
+let row=document.createElement("tr")
+row.className="border-t"
+if (item.image==='pdf'){
+    row.innerHTML=`
+<td class="px-6 py-4">
+<span class="material-symbols-outlined text-red-500 text-3xl">picture_as_pdf</span>
+</td>
+
+<td class="px-6 py-4">
+${item.created_at}
+</td>
+
+<td class="px-6 py-4">
+${item.added_watermark || "-"}
+</td>
+
+<td class="px-6 py-4">
+${item.query || "-"}
+</td>
+`
+}
+else if ( item.image==='docx'){
+    row.innerHTML=`
+<td class="px-6 py-4">
+<span class="material-symbols-outlined text-blue-500 text-3xl">
+description
+</span>
+</td>
+
+<td class="px-6 py-4">
+${item.created_at}
+</td>
+
+<td class="px-6 py-4">
+${item.added_watermark || "-"}
+</td>
+
+<td class="px-6 py-4">
+${item.query || "-"}
+</td>
+`
+}
+else{
+row.innerHTML=`
+<td class="px-6 py-4">
+<img src="${item.image}" class="w-12 h-12 rounded">
+</td>
+
+<td class="px-6 py-4">
+${item.created_at}
+</td>
+
+<td class="px-6 py-4">
+${item.added_watermark || "-"}
+</td>
+
+<td class="px-6 py-4">
+${item.query || "-"}
+</td>
+`
+}
+table.appendChild(row)
+
+})
+
+}
+
+loadHistoryPreview()
+</script>
+</table>
+
+</div>
+
+</div>
+
+
+</div>
+
+</main>
+
+</div>
+
+</body>
+
+</html>

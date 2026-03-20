@@ -1,0 +1,177 @@
+
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Watermark History - Dashboard</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+<script>
+tailwind.config = {darkMode:"class",theme:{extend:{colors:{primary:"#135bec","background-light":"#f6f6f8","background-dark":"#101622"},fontFamily:{display:["Inter","sans-serif"]}}}}
+</script>
+
+<style>
+.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;display:inline-block;vertical-align:middle;}
+body{font-family:'Inter',sans-serif;}
+.tab-active{background:#135bec;color:white;}
+</style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+
+<header class="sticky top-0 z-50 w-full bg-[#1f3c88] text-white">
+<div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+<span class="text-xl font-bold tracking-tight text-white">Watermark Intelligence System</span>
+<a href="/all/{{username}}" class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-white/10 text-white transition">
+<span class="material-symbols-outlined text-2xl text-white">home</span>
+</a>
+</div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 py-8">
+<h1 class="text-3xl font-extrabold mb-4">Watermark History</h1>
+<div id="errorBox" class="hidden mb-4 p-3 rounded-lg bg-red-100 text-red-700"></div>
+
+<div class="flex gap-2 mb-6">
+<button id="imgTab" class="px-5 py-2 rounded-lg font-semibold tab-active">Images</button>
+<button id="pdfTab" class="px-5 py-2 rounded-lg font-semibold bg-slate-200 dark:bg-slate-700">PDF</button>
+<button id="doctab" class="px-5 py-2 rounded-lg font-semibold bg-slate-200 dark:bg-slate-700">DOC</button>
+</div>
+
+<div id="imageSection" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm">
+<div class="overflow-x-auto"><table class="w-full text-left border-collapse">
+<thead><tr class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
+<th class="px-6 py-4 text-xs font-bold uppercase text-slate-500">Preview</th>
+<th class="px-6 py-4 text-xs font-bold uppercase text-slate-500">Date and Time</th>
+<th class="px-6 py-4 text-xs font-bold uppercase text-slate-500">Added Text/Key</th>
+<th class="px-6 py-4 text-xs font-bold uppercase text-slate-500">Query</th>
+
+</tr></thead>
+<tbody id="imageTableBody"></tbody>
+</table></div></div>
+
+<div id="docsection" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm">
+<div class="overflow-x-auto"><table class="w-full text-left border-collapse">
+<thead><tr class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
+<th class="px-6 py-4 text-xs font-bold uppercase text-slate-500">Preview</th>
+<th class="px-6 py-4 text-xs font-bold uppercase text-slate-500">Date and Time</th>
+<th class="px-6 py-4 text-xs font-bold uppercase text-slate-500">Added Text/Key</th>
+<th class="px-6 py-4 text-xs font-bold uppercase text-slate-500">Query</th>
+
+</tr></thead>
+<tbody id="doctablebody"></tbody>
+</table></div></div>
+
+<div id="pdfSection" class="hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm">
+<div class="overflow-x-auto"><table class="w-full text-left border-collapse">
+<thead><tr class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
+<th class="px-6 py-4 text-xs font-bold uppercase text-slate-500">Preview</th>
+<th class="px-6 py-4 text-xs font-bold uppercase text-slate-500">Date and Time</th>
+<th class="px-6 py-4 text-xs font-bold uppercase text-slate-500">Added Text/Key</th>
+<th class="px-6 py-4 text-xs font-bold uppercase text-slate-500">Query</th>
+
+</tr></thead>
+<tbody id="pdfTableBody"></tbody>
+</table></div></div>
+</main>
+
+<script>
+const imgTab=document.getElementById("imgTab");
+const pdfTab=document.getElementById("pdfTab");
+const docTab=document.getElementById('doctab');
+const imageSection=document.getElementById("imageSection");
+const pdfSection=document.getElementById("pdfSection");
+const docsection=document.getElementById('docsection')
+imgTab.onclick=()=>{imageSection.classList.remove("hidden");pdfSection.classList.add("hidden");docsection.classList.add('hidden');imgTab.classList.add("tab-active");pdfTab.classList.remove("tab-active");};
+pdfTab.onclick=()=>{pdfSection.classList.remove("hidden");imageSection.classList.add("hidden");docsection.classList.add('hidden');pdfTab.classList.add("tab-active");imgTab.classList.remove("tab-active");};
+docTab.onclick=()=>{docsection.classList.remove('hidden');pdfSection.classList.add('hidden');imageSection.classList.add("hidden");docTab.classList.add('tab-active');docTab.classList.remove('tab-active');};
+const FALLBACK_API="http://127.0.0.1:5000/api/hist/{{username}}";
+let API="/api/preview2/{{username}}"; // try same-origin first
+
+function showError(msg){const box=document.getElementById("errorBox");box.textContent=msg;box.classList.remove("hidden");}
+
+async function safeFetch(url,options){
+ try{const r=await fetch(url,options); if(!r.ok) throw new Error(r.status); return r;}catch(e){return null;}
+}
+
+async function fetchData(){
+ let res=await safeFetch(API);
+ if(!res){
+  res=await safeFetch(FALLBACK_API);
+  API=FALLBACK_API;
+ }
+ if(!res){showError("Cannot reach backend API. Start server on port 5000 or serve frontend via backend."); return []}
+ return await res.json();
+}
+
+async function loadImages(){
+ const data=await fetchData();
+ const tbody=document.getElementById("imageTableBody");
+ tbody.innerHTML="";
+ data.forEach(item => {
+  if(item.type !== ".png") return;
+  
+  const preview = (API===FALLBACK_API?"http://localhost:5000":"") + item.preview_url;
+  const date=new Date(item.created_at).toLocaleString();
+  const row = `
+    <tr>
+      <td><img src="${preview}" class="w-14 h-14 rounded"></td>
+      <td>${date}</td>
+      <td>${item.added_watermark}</td>
+      <td>${item.query}</td>
+    </tr>
+  `;
+
+  tbody.insertAdjacentHTML("beforeend", row);
+});
+}
+
+async function loadPDFs(){
+ const data=await fetchData();
+ const tbody=document.getElementById("pdfTableBody");
+ tbody.innerHTML="";
+ data.forEach(item=>{
+  if(item.type!==".pdf")   return;
+  const date=new Date(item.created_at).toLocaleString();
+  const row=`<tr id="row-${item.id}" class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+  <td class="px-6 py-4"><span class="material-symbols-outlined text-red-500 text-3xl">picture_as_pdf</span></td>
+  
+  <td class="px-6 py-4 text-sm">${date}</td>
+
+  <td class="px-6 py-4 font-semibold text-primary">${item.added_watermark}</td>
+  <td class="px-6 py-4 text-slate-500">${item.query}</td>
+  <td class="px-6 py-4 text-right space-x-2">
+  </td></tr>`;
+  tbody.insertAdjacentHTML("beforeend",row);
+ });
+}
+async function loadDOCs(){
+ const data=await fetchData();
+ const tbody=document.getElementById("doctablebody");
+ tbody.innerHTML="";
+ data.forEach(item=>{
+  if(item.type!==".docx")   return;
+  const date=new Date(item.created_at).toLocaleString();
+  const row=`<tr id="row-${item.id}" class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+  <td class="px-6 py-4"><span class="material-symbols-outlined text-red-500 text-3xl">picture_as_pdf</span></td>
+  
+  <td class="px-6 py-4 text-sm">${date}</td>
+
+  <td class="px-6 py-4 font-semibold text-primary">${item.added_watermark}</td>
+  <td class="px-6 py-4 text-slate-500">${item.query}</td>
+  <td class="px-6 py-4 text-right space-x-2">
+  </td></tr>`;
+  tbody.insertAdjacentHTML("beforeend",row);
+ });
+}
+
+loadDOCs();
+loadImages();
+loadPDFs();
+</script>
+</body>
+</html>

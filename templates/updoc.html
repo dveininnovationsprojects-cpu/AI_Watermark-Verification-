@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Upload Document - Watermark and keyword based analysis</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet"/>
+<script>
+
+tailwind.config = {
+darkMode: "class",
+theme: {
+extend: {
+colors: {
+primary: "#135bec",
+"background-light": "#f6f6f8",
+"background-dark": "#101622",
+},
+fontFamily: {
+display: ["Inter", "sans-serif"]
+}
+}
+}
+}
+</script>
+<style>
+input{
+width: 500px;
+}   
+body { font-family: 'Inter', sans-serif; }
+.material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+</style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen">
+<div class="flex min-h-screen flex-col">
+
+<header class="flex h-16 items-center bg-[#1f3c88] text-white px-6 justify-between shadow-sm">
+<div class="flex items-center gap-3">
+<h2 class="text-xl font-bold tracking-tight text-white">Watermark Intelligence System</h2>
+</div>
+<a href="/indx/{{username}}" class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-white/10 text-white transition">
+<span class="material-symbols-outlined text-2xl">dashboard</span>
+</a>
+</header>
+
+<main class="flex flex-1 items-center justify-center p-6">
+<div class="w-full max-w-2xl space-y-8">
+
+<div class="text-center">
+<h1 class="text-3xl font-black">Upload Your Document</h1>
+<p class="text-slate-500">PDF / DOC / DOCX supported</p>
+</div>
+
+<div class="rounded-xl border bg-white dark:bg-slate-900 shadow-sm">
+<form id="uploadForm" action="/docorpdf/{{ username }}" method="POST" enctype="multipart/form-data" class="p-8 space-y-6">
+
+<div class="relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-300 py-16 hover:border-primary">
+<input id="fileInput" name="file" type="file" accept=".pdf,.doc,.docx" required class="absolute inset-0 opacity-0 cursor-pointer"/>
+<span class="material-symbols-outlined text-5xl text-slate-400">cloud_upload</span>
+<p class="font-semibold mt-3">Drag & Drop or Click</p>
+<p class="text-sm text-slate-500">Max 20MB</p>
+<p id="selectedName" class="mt-2 text-xs text-primary font-semibold hidden"></p>
+</div>
+<input name="word" placeholder="words to search (enter with a ',' after each word)" required>
+<div id="progressBox" class="hidden">
+<p class="text-xs text-slate-500 mb-1">Uploading...</p>
+<div class="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
+<div id="progressBar" class="h-full bg-primary w-0"></div>
+</div>
+</div>
+
+<div id="success-message" class="hidden items-center gap-2 bg-emerald-50 border border-emerald-200 p-3 rounded-lg text-emerald-700">
+<span class="material-symbols-outlined">check_circle</span>
+<p class="text-sm font-medium">Upload success</p>
+</div>
+
+<div id="filePreview" class="hidden mt-6 p-4 rounded-lg border bg-slate-50 text-slate-700 flex items-center gap-3">
+<span class="material-symbols-outlined text-3xl text-primary">description</span>
+<div>
+<p id="fileName" class="font-semibold"></p>
+<p class="text-xs text-slate-500">Uploaded document</p>
+</div>
+</div>
+
+<div id="analysisOutput" class="hidden mt-6 bg-black text-green-400 rounded-lg p-6 font-mono text-sm whitespace-pre-wrap">
+</div>
+
+<button type="submit" class="w-full rounded-lg bg-primary text-white py-3 font-bold hover:bg-blue-700">
+Upload Document
+</button>
+
+</form>
+</div>
+</div>
+</main>
+</div>
+
+<script>
+const form = document.getElementById("uploadForm");
+const fileInput = document.getElementById("fileInput");
+const successBox = document.getElementById("success-message");
+const progressBox = document.getElementById("progressBox");
+const progressBar = document.getElementById("progressBar");
+const analysisOutput = document.getElementById("analysisOutput");
+const filePreview = document.getElementById("filePreview");
+const fileName = document.getElementById("fileName");
+const selectedName = document.getElementById("selectedName");
+
+fileInput.addEventListener('change',()=>{
+ if(fileInput.files && fileInput.files[0]){
+   selectedName.textContent = fileInput.files[0].name;
+   selectedName.classList.remove('hidden');
+ }
+});
+
+form.addEventListener("submit", async (e)=>{
+e.preventDefault();
+
+if(!fileInput.files.length){
+alert("Select a file first");
+return;
+}
+
+successBox.classList.add("hidden");
+analysisOutput.classList.add("hidden");
+progressBox.classList.remove("hidden");
+progressBar.style.width="10%";
+
+const formData = new FormData(form);
+
+try{
+const res = await fetch(form.action,{ method:"POST", body:formData });
+progressBar.style.width="80%";
+
+if(!res.ok) throw new Error("Upload failed");
+
+const data = await res.json();
+
+progressBar.style.width="100%";
+successBox.classList.remove("hidden");
+successBox.querySelector("p").textContent = data.message || "File uploaded successfully";
+
+// show uploaded file preview info
+const uploadedFile = fileInput.files[0];
+if(uploadedFile){
+ fileName.textContent = uploadedFile.name;
+ filePreview.classList.remove("hidden");
+}
+
+analysisOutput.classList.remove("hidden");
+analysisOutput.textContent = JSON.stringify(data, null, 4);
+
+}catch(err){
+alert(err);
+progressBox.classList.add("hidden");
+
+analysisOutput.classList.remove("hidden");
+analysisOutput.textContent = JSON.stringify(
+{"error":err},
+null,
+4
+);
+}
+});
+</script>
+
+</body>
+</html>

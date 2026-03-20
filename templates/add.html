@@ -1,0 +1,472 @@
+FOR IMAGES
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Watermark Studio</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+
+body{
+background:linear-gradient(120deg,#f3f4f4,#f6f6f6,#e0f2fe);
+font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.card{
+background:rgb(189, 189, 189);
+border-radius:18px;
+box-shadow:0 10px 30px rgba(16, 17, 17, 0.08);
+transition:.3s;
+}
+
+.card:hover{
+transform:translateY(-4px);
+box-shadow:0 18px 40px rgba(0,0,0,0.12);
+}
+
+canvas{
+border-radius:12px;
+cursor:grab;
+max-width:100%;
+}
+
+.home-btn{
+position:absolute;
+top:20px;
+right:20px;
+background:rgb(193, 163, 163);
+border-radius:10px;
+padding:8px;
+box-shadow:0 6px 15px rgba(0,0,0,0.1);
+}
+
+</style>
+
+</head>
+
+<body class="p-6">
+
+<a href="/home.html" class="home-btn">🏠</a>
+
+<h1 class="text-2xl font-bold mb-6">Watermark Studio</h1>
+
+<form id="form" action="/add/{{username}}" method="POST" enctype="multipart/form-data">
+
+<div class="grid grid-cols-2 gap-6">
+
+<!-- Upload -->
+
+<div class="card p-6">
+
+<h2 class="font-semibold mb-3">Upload File</h2>
+
+<input id="fileUpload"
+type="file"
+accept=".png,.jpg,.jpeg,.pdf,.docx"
+class="border p-2 w-full rounded">
+
+</div>
+
+
+<!-- Watermark Type -->
+
+<div class="card p-6">
+
+<h2 class="font-semibold mb-3">Watermark Type</h2>
+
+<select id="type" class="border p-2 w-full rounded">
+
+<option value="text">Text Watermark</option>
+<option value="image">Image Watermark</option>
+
+</select>
+
+</div>
+
+
+<!-- TEXT SETTINGS -->
+
+<div id="textOptions" class="card p-6">
+
+<h2 class="font-semibold mb-3">Text Settings</h2>
+<input id="text"
+placeholder="Watermark text"
+class="border p-2 w-full mb-3 rounded">
+
+<label>Font</label>
+<select id="font"
+class="border p-2 w-full mb-3 rounded">
+<option value="ARIAL.TTF">ARIAL</option>
+<option value="ARIALBD.TTF">ARIAL BOLD</option>
+<option value="ARIALBI.TTF">ARIAL BOLD ITALIC</option>
+<option value="ARIALI.TTF">ARIAL ITALIC</option>
+<option value="BAHNSCHRIFT.TTF">BAHNSCHRIFT</option>
+<option value="FRAMD.TTF">FRAMD</option>
+<option value="FRAMDIT.TTF">FRAMDIT</option>
+<option value="NIRMALA.TTC">NIRMALA</option>
+
+</select>
+
+
+<label>Font Size</label>
+
+<input id="size"
+type="number"
+min="10"
+max="150"
+value="40"
+class="border p-2 w-full mb-3 rounded">
+
+
+<label>Opacity</label>
+
+<input id="opacity"
+type="range"
+min="0.1"
+max="1.0"
+step="0.1"
+value="0.6"
+class="w-full">
+
+</div>
+
+
+<!-- IMAGE WATERMARK -->
+
+<div id="imageOptions" class="card p-6 hidden">
+
+<h2 class="font-semibold mb-3">Image Watermark</h2>
+
+<input id="logo"
+type="file"
+class="border p-2 w-full mb-3 rounded">
+
+<label>Image Size</label>
+
+<input id="logoSize"
+type="number"
+min="30"
+max="150"
+value="80"
+class="border p-2 w-full mb-3 rounded">
+
+<label>Transparency</label>
+
+<input id="logoOpacity"
+type="range"
+min="0.1"
+max="1.0"
+step="0.1"
+value="0.7"
+class="w-full">
+
+</div>
+
+
+<!-- PATTERN -->
+
+<div class="card p-6">
+
+<label class="font-semibold">Pattern</label>
+
+<select id="pattern"
+class="border p-2 w-full rounded">
+
+<option value="single">Single</option>
+<option value="grid">Grid</option>
+
+</select>
+
+</div>
+
+</div>
+
+
+<!-- PREVIEW -->
+
+<div class="card p-6 mt-6">
+
+<canvas id="canvas"></canvas>
+
+<p class="text-sm text-gray-500 mt-2">
+Preview works only for images.  
+PDF & DOCX processed after submit.
+</p>
+
+</div>
+
+
+<div class="mt-6 flex gap-4">
+
+<button type="button"
+onclick="draw()"
+class="bg-blue-600 text-white px-6 py-2 rounded-lg">
+Preview
+</button>
+
+<button type="button"
+onclick="submitForm()"
+class="bg-green-600 text-white px-6 py-2 rounded-lg">
+Submit
+</button>
+
+</div>
+
+</form>
+
+
+<script>
+
+const canvas=document.getElementById("canvas")
+const ctx=canvas.getContext("2d")
+
+let img=new Image()
+let logoImg=new Image()
+
+let posX=200
+let posY=200
+
+let dragging=false
+let currentFileType="image"
+let uploadedFileName="file"
+
+
+document.getElementById("type").addEventListener("change",e=>{
+
+if(e.target.value==="text"){
+
+document.getElementById("textOptions").style.display="block"
+document.getElementById("imageOptions").style.display="none"
+
+}else{
+
+document.getElementById("textOptions").style.display="none"
+document.getElementById("imageOptions").style.display="block"
+
+}
+
+})
+
+
+document.getElementById("fileUpload").onchange=e=>{
+
+const file=e.target.files[0]
+
+if(!file) return
+
+uploadedFileName=file.name
+
+if(file.type.includes("image")){
+
+currentFileType="image"
+
+const reader=new FileReader()
+
+reader.onload=()=>{
+
+img.src=reader.result
+
+img.onload=()=>{
+
+canvas.width=img.width
+canvas.height=img.height
+
+draw()
+
+}
+
+}
+
+reader.readAsDataURL(file)
+
+}else{
+
+currentFileType="document"
+alert("Preview only works for images")
+
+}
+
+}
+
+
+document.getElementById("logo").onchange=e=>{
+
+const reader=new FileReader()
+
+reader.onload=()=>{
+
+logoImg.src=reader.result
+draw()
+
+}
+
+reader.readAsDataURL(e.target.files[0])
+
+}
+
+
+function draw(){
+
+if(currentFileType!=="image") return
+
+ctx.clearRect(0,0,canvas.width,canvas.height)
+
+ctx.drawImage(img,0,0)
+
+const pattern=document.getElementById("pattern").value
+const type=document.getElementById("type").value
+
+if(pattern==="single"){
+
+drawWatermark(posX,posY,type)
+
+}
+
+if(pattern==="grid"){
+
+const rows=2
+const cols=3
+
+const gapX=canvas.width/(cols+1)
+const gapY=canvas.height/(rows+1)
+
+for(let r=1;r<=rows;r++){
+
+for(let c=1;c<=cols;c++){
+
+drawWatermark(c*gapX,r*gapY,type)
+
+}
+
+}
+
+}
+
+}
+
+
+function drawWatermark(x,y,type){
+
+ctx.save()
+
+if(type==="text"){
+
+const text=document.getElementById("text").value
+const size=document.getElementById("size").value
+const opacity=document.getElementById("opacity").value
+const font=document.getElementById("font").value
+
+ctx.globalAlpha=opacity
+ctx.font=size+"px "+font
+ctx.fillStyle="white"
+ctx.textAlign="center"
+
+ctx.fillText(text,x,y)
+
+}
+
+if(type==="image" && logoImg.src){
+
+const size=document.getElementById("logoSize").value
+const opacity=document.getElementById("logoOpacity").value
+
+ctx.globalAlpha=opacity
+
+ctx.drawImage(
+logoImg,
+x-size/2,
+y-size/2,
+size,
+size
+)
+
+}
+
+ctx.restore()
+
+}
+
+
+canvas.addEventListener("mousedown",()=>{
+
+dragging=true
+canvas.style.cursor="grabbing"
+
+})
+
+canvas.addEventListener("mouseup",()=>{
+
+dragging=false
+canvas.style.cursor="grab"
+
+})
+
+canvas.addEventListener("mousemove",e=>{
+
+if(!dragging) return
+
+const rect=canvas.getBoundingClientRect()
+
+posX=e.clientX-rect.left
+posY=e.clientY-rect.top
+
+draw()
+
+})
+
+
+["text","size","opacity","pattern","logoSize","logoOpacity"]
+.forEach(id=>{
+
+const el=document.getElementById(id)
+
+if(el){
+el.addEventListener("input",draw)
+}
+
+})
+
+
+async function submitForm(){
+
+const formData=new FormData()
+
+const file=document.getElementById("fileUpload").files[0]
+formData.append("type", document.getElementById("type").value)
+formData.append("file",file)
+formData.append('pattern',document.getElementById('pattern').value)
+formData.append("text",document.getElementById("text").value)
+formData.append("fontSize",document.getElementById("size").value)
+formData.append("opacity",document.getElementById("opacity").value)
+formData.append("font",document.getElementById("font").value)
+
+const logo=document.getElementById("logo").files[0]
+
+if(logo) formData.append("logo",logo)
+
+const res=await fetch("/add/{{username}}",{
+method:"POST",
+body:formData
+})
+
+const blob=await res.blob()
+
+const ext=uploadedFileName.split(".").pop()
+
+const url=URL.createObjectURL(blob)
+
+const a=document.createElement("a")
+
+a.href=url
+a.download="watermarked."+ext
+
+a.click()
+
+}
+
+</script>
+
+</body>
+</html>

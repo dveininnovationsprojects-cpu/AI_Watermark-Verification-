@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Image Watermark Analyzer</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+<body class="bg-gray-100 min-h-screen">
+
+<header class="bg-blue-700 text-white p-4">
+
+<div class="max-w-6xl mx-auto flex justify-between">
+
+<h1 class="font-semibold">
+Image Watermark Analyzer
+</h1>
+
+<a href="/indx/{{username}}" class="text-sm underline">
+Back to Dashboard
+</a>
+
+</div>
+
+</header>
+
+
+<div class="max-w-4xl mx-auto mt-10">
+
+<div class="bg-white rounded-xl shadow border">
+
+<div class="p-6 border-b">
+
+<h2 class="text-lg font-semibold">
+Upload Image for Analysis
+</h2>
+
+
+
+</div>
+
+
+<div class="p-6">
+
+<form id="form-analyze" enctype="multipart/form-data" class="space-y-4" action="/all/{{username}}" method="POST">
+
+<input
+type="file"
+name="image"
+id="imageInput"
+class="w-full border rounded p-2"
+required>
+
+<img
+id="preview"
+class="hidden rounded shadow max-h-64"/>
+
+<button
+class="bg-blue-700 text-white px-6 py-2 rounded hover:bg-blue-800">
+Run Analysis
+</button>
+
+</form>
+
+
+<pre
+id="result"
+class="hidden bg-black text-green-400 p-4 mt-6 rounded text-xs overflow-x-auto">
+<img
+id="resultImage"
+class="hidden rounded shadow max-h-64"/>
+</pre>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+const username="{{username}}";
+
+const imageInput=document.getElementById("imageInput");
+const preview=document.getElementById("preview");
+const form=document.getElementById("form-analyze");
+const result=document.getElementById("result");
+const img=document.getElementById('resultImage');
+imageInput.onchange=()=>{
+
+const file=imageInput.files[0];
+
+if(!file)return;
+
+const reader=new FileReader();
+
+reader.onload=e=>{
+preview.src=e.target.result;
+preview.classList.remove("hidden");
+}
+
+reader.readAsDataURL(file);
+
+};
+
+form.onsubmit=async e=>{
+
+e.preventDefault();
+
+const res=await fetch(`/all/${username}`,{
+method:"POST",
+body:new FormData(form)
+});
+
+const data=await res.json();
+
+result.classList.remove("hidden");
+
+result.textContent=JSON.stringify(data.query,null,2);
+img.src="data:image/jpeg;base64," + data.image;
+};
+
+</script>
+
+</body>
+
+</html>

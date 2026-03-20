@@ -1,9 +1,10 @@
 opencv-python
-numpy
+numpy==1.23.5
 pillow
 flask
 pytesseract
-imwatermark
+invisible-watermark==0.2.0
+imhist==0.0.4
 pymupdf
 #tensorflow==2.15.0
 #keras

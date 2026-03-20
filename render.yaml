@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: ai-watermark-app
+    runtime: python
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+      apt-get update && apt-get install -y libgl1
+    startCommand: gunicorn app:app
+    envVars:
+      - key: SECRET_KEY
+        sync: false
